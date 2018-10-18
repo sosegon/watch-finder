@@ -25,11 +25,7 @@ Once the images have been collected and filtered, they have to be prepared. Firs
 
 Then, positive samples have to be created and stored in a folder named samples. In this process, the positive images (watches) are integrated into the negative ones (background). This integration is done randomly in terms of the position and rotation of the watches. This is done by running the following command:
 
-`perl bin/createsamples.pl positives.txt negatives.txt samples 1500\`
-
-`"opencv_createsamples -bgcolor 0 -bgthresh 0 -maxxangle 1.1\`
-
-`-maxyangle 1.1 maxzangle 0.5 -maxidev 40 -w 80 -h 40"`
+`perl bin/createsamples.pl positives.txt negatives.txt samples 1500 "opencv_createsamples -bgcolor 0 -bgthresh 0 -maxxangle 1.1 -maxyangle 1.1 maxzangle 0.5 -maxidev 40 -w 80 -h 40"`
 
 Finally, all those samples have to be merged into a single file using the following command:
 
