@@ -51,7 +51,7 @@ class FinderView extends React.Component {
 
 			// The detection is done using grayscale images
 			cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
-			classifier.detectMultiScale(src, objects, 1.2, 4, 0);
+			classifier.detectMultiScale(src, objects, 5.1, 6, 0);
 
 			// Draw rectangles or every detection
 			for (let i = 0; i < objects.size(); ++i) {
