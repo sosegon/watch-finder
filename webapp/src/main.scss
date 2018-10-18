@@ -1,0 +1,62 @@
+$section-space: 8px;
+$button-size: 50px;
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  font-family: "Clear Sans", sans-serif;
+  font-size: 21px;
+}
+
+.board {
+  padding: 5px;
+  border-radius: 7px;
+  position: relative;
+}
+
+#video-source {
+	display: none;
+}
+
+.buttons-container {
+  margin-top: $section-space;
+  text-align: center;
+}
+
+#camera-button {
+  background-image: url("../img/photo-camera.png");
+}
+
+#folder-button {
+  background-image: url("../img/folder.png");
+  margin-left: $button-size;
+}
+
+#camera-button, #folder-button {
+  background-color: #22caee;
+  background-size: $button-size;
+}
+
+.button {
+  width: $button-size;
+  height: $button-size;
+  margin-bottom: 5px;
+  margin-right: 5px;
+  margin-left: 5px;
+  line-height: 90px;
+  display: inline-block;
+  font-size: 55px;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  border-radius: 40px;
+  font-family: "Clear Sans";
+  color: #766;
+  background-color: #dcb;
+}
+
+.canvas-image {
+	border-style: solid;
+}
