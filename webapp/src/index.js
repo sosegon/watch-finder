@@ -6,7 +6,7 @@ class FinderView extends React.Component {
 	setup() {
 		// The step indicates the state of the GUI when interacting
 		// with the user: 0 = idle, 1 = streaming, 2 = file, 3 = processing
-		this.state = {step: 0};
+		this.state = {step: 0, message: ""};
 	}
 	shoot() {
 		let videoElem = this.refs.videoRef;
@@ -20,7 +20,6 @@ class FinderView extends React.Component {
 
 		this.stopCamera();
 		this.streaming = false;
-
 		this.detectWatch(srcMat);
 	}
 	detectWatch(srcMat) {
@@ -34,17 +33,17 @@ class FinderView extends React.Component {
 			let detection = detections.get(0);
 			let final = utils.highlightBox(srcMat, detection);
 			detector.drawDetections(final, canvasOutput, 1);
-			this.setState({step: 3});
+			this.setState({step: 3, message: "Searching!"});
 			this.search(watchMat);
 		} else {
-			this.setState({step: 0});
+			this.setState({step: 0, message: "No watch detected!"});
 		}
 	}
 	search(watchMat) {
 		// TODO: Implement the search
 		let self = this;
 		setTimeout(() => {
-			self.setState({step: 0});
+			self.setState({step: 0, message: ""});
 		}, 500);
 	}
 	startCamera() {
@@ -58,7 +57,7 @@ class FinderView extends React.Component {
 				self.stream = stream;
 				self.streaming = true;
 				self.processVideo();
-				self.setState({step: 1});
+				self.setState({step: 1, message: ""});
 			})
 			.catch(function(err) {
 				console.log("An error occured! " + err);
@@ -122,6 +121,7 @@ class FinderView extends React.Component {
 				img.crossOrigin = 'anonymous';
 				img.onload = function() {
 					ctx.drawImage(img, 0, 0, width, height);
+					self.setState({step: 2, message: ""});
 					self.detectWatch(new cv.imread(canvasOutput));
 				};
 				img.src = e.target.result;
@@ -146,6 +146,10 @@ class FinderView extends React.Component {
 		}
 		sourceButtonsClass = sourceButtonsClass.join(" ");
 		shootButtonsClass = shootButtonsClass.join(" ");
+
+		let message = this.state.message !== "" ?
+		(<span className="message">{this.state.message}</span>) :
+		(<span></span>);
 		return(
 			<div>
 				<video id="video-source" ref="videoRef" height="240" width="320"></video>
@@ -157,6 +161,9 @@ class FinderView extends React.Component {
 				</div>
 				<div className={shootButtonsClass}>
 					<span className="button" id="shooter-button" onClick={this.shoot.bind(this)}></span>
+				</div>
+				<div className="message-container">
+					{message}
 				</div>
 			</div>
 		);
