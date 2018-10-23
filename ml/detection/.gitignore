@@ -4,3 +4,5 @@ pos/
 samples/
 uglies/
 samples.vec
+positives.txt
+negatives.txt
