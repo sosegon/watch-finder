@@ -18,12 +18,14 @@ class FinderView extends React.Component {
 		let cap = new cv.VideoCapture(videoElem);
 		cap.read(srcMat);
 
-		// This is the canvas where the video captured by the camera will be displayed
-		let canvasOutput = this.refs.canvasOutRef;
-		let contextOutput = canvasOutput.getContext("2d");
-
 		this.stopCamera();
 		this.streaming = false;
+
+		this.detectWatch(srcMat);
+	}
+	detectWatch(srcMat) {
+		// This is the canvas where the video captured by the camera will be displayed
+		let canvasOutput = this.refs.canvasOutRef;
 
 		detector.detect(srcMat);
 		let detections = detector.detections;
@@ -78,7 +80,7 @@ class FinderView extends React.Component {
 		let width = videoElem.width;
 
 		// Where we draw what is captured by the camera
-		let canvasOutput = this.refs.canvasOutRef
+		let canvasOutput = this.refs.canvasOutRef;
 
 		// OpenCV elements
 		let srcMat = new cv.Mat(height, width, cv.CV_8UC4);
@@ -105,6 +107,32 @@ class FinderView extends React.Component {
 		}
 		setTimeout(loop, 0);
 	}
+	loadImage(event) {
+		if (event.target.files && event.target.files[0]) {
+			let canvasOutput = this.refs.canvasOutRef;
+			let height = canvasOutput.height;
+			let width = canvasOutput.width;
+			let ctx = canvasOutput.getContext('2d');
+
+			let self = this;
+
+			let reader = new FileReader();
+			reader.onload = (e) => {
+				let img = new Image();
+				img.crossOrigin = 'anonymous';
+				img.onload = function() {
+					ctx.drawImage(img, 0, 0, width, height);
+					self.detectWatch(new cv.imread(canvasOutput));
+				};
+				img.src = e.target.result;
+			};
+			reader.readAsDataURL(event.target.files[0]);
+		}
+	}
+	bindToInput() {
+		let inputImg = this.refs.inputImgRef;
+		inputImg.click();
+	}
 	render() {
 		let sourceButtonsClass = ["buttons-container"];
 		let shootButtonsClass = ["buttons-container"];
@@ -124,7 +152,8 @@ class FinderView extends React.Component {
 				<canvas className="canvas-image" ref="canvasOutRef" height="240" width="320"></canvas>
 				<div className={sourceButtonsClass}>
 					<span className="button" id="camera-button" onClick={this.startCamera.bind(this)}></span>
-					<span className="button" id="folder-button"></span>
+					<span className="button" id="folder-button" onClick={this.bindToInput.bind(this)}></span>
+					<input className="button" id="image-input" ref="inputImgRef" type="file" accept="image/*" onChange={this.loadImage.bind(this)}/>
 				</div>
 				<div className={shootButtonsClass}>
 					<span className="button" id="shooter-button" onClick={this.shoot.bind(this)}></span>

@@ -38,6 +38,10 @@ body {
   margin-left: $button-size;
 }
 
+#image-input {
+  display: none;
+}
+
 #camera-button, #folder-button {
   background-color: #22caee;
   background-size: $button-size;
