@@ -25,6 +25,10 @@ body {
   text-align: center;
 }
 
+.buttons-container-disabled {
+  display: none;
+}
+
 #camera-button {
   background-image: url("../img/photo-camera.png");
 }
