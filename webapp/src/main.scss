@@ -1,5 +1,20 @@
 $section-space: 8px;
 $button-size: 50px;
+$height: 25px;
+$text-color: #776E65;
+
+@mixin animation($args...) {
+  -webkit-animation: $args;
+  -moz-animation: $args;
+  animation: $args;
+}
+
+@mixin animation-fill-mode($args...) {
+  -webkit-animation-fill-mode: $args;
+  -moz-animation-fill-mode: $args;
+  animation-fill-mode: $args;
+}
+
 body {
   display: flex;
   flex-direction: column;
@@ -25,6 +40,10 @@ body {
   text-align: center;
 }
 
+.buttons-container-disabled {
+  display: none;
+}
+
 #camera-button {
   background-image: url("../img/photo-camera.png");
 }
@@ -32,6 +51,10 @@ body {
 #folder-button {
   background-image: url("../img/folder.png");
   margin-left: $button-size;
+}
+
+#image-input {
+  display: none;
 }
 
 #camera-button, #folder-button {
@@ -59,4 +82,26 @@ body {
 
 .canvas-image {
 	border-style: solid;
+}
+
+@keyframes fade {
+  from {opacity: 1;}
+  to {opacity: 0;}
+}
+
+.message-container {
+  text-align: center;
+}
+
+.message {
+    opacity: 0;
+    right: 30px;
+    color: red;
+    font-size: $height;
+    line-height: $height;
+    font-weight: bold;
+    color: rgba($text-color, .9);
+    z-index: 100;
+    animation-name: fade;
+    animation-duration: 1.2s;
 }

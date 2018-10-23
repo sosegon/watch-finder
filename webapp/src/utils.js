@@ -152,4 +152,41 @@ function Utils(errorOutputId) { // eslint-disable-line no-unused-vars
             this.stream.getVideoTracks()[0].stop();
         }
     };
+
+    this.highlightBox = function(srcMat, box) {
+        // Mask
+        let height = srcMat.rows;
+        let width = srcMat.cols;
+        let mask = new cv.Mat.zeros(height, width, cv.CV_8UC1);
+        for(let i = box.x; i < box.x + box.width; i++) {
+            for(let j = box.y; j < box.y + box.height; j++) {
+                mask.data[j*width + i] = 255;
+            }
+        }
+        let frame = new cv.Mat();
+        cv.bitwise_and(srcMat, srcMat, frame, mask);
+
+        // Reduce the opacity of surrounding area
+        let surr = srcMat.clone();
+        for(let i = 0; i < width; i++) {
+            for(let j = 0; j < height; j++) {
+                surr.data[j*width*4 + i*4+3] = 127;
+            }
+        }
+
+        let final = new cv.Mat();
+        cv.add(frame, surr, final);
+
+        // Update frame, to avoid the double intensity due to sum
+        for(let i = box.x; i < box.x + box.width; i++) {
+            for(let j = box.y; j < box.y + box.height; j++) {
+                final.data[j*width*4 + i*4+0] = frame.data[j*width*4 + i*4+0];
+                final.data[j*width*4 + i*4+1] = frame.data[j*width*4 + i*4+1];
+                final.data[j*width*4 + i*4+2] = frame.data[j*width*4 + i*4+2];
+                final.data[j*width*4 + i*4+3] = frame.data[j*width*4 + i*4+3];
+            }
+        }
+
+        return final;
+    };
 };
