@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import os
 import argparse
+import glob
 
 def store_raw_images(directory, list_file):
     neg_image_urls = open(list_file, "r");
@@ -10,10 +11,15 @@ def store_raw_images(directory, list_file):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
+    existing = glob.glob("{:s}/*".format(directory))
+
     for i in neg_image_urls.read().split('\n'):
         try:
             print(i)
             im_name = "{:s}/{:s}".format(directory, i.split("/")[-1])
+            if im_name in existing:
+                print("Existing")
+                continue
             urllib.request.urlretrieve(i, im_name)
 
         except Exception as e:
