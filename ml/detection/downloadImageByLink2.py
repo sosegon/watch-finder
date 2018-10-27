@@ -12,15 +12,18 @@ def store_raw_images(directory, list_file):
         os.makedirs(directory)
 
     existing = glob.glob("{:s}/*".format(directory))
+    pic_num = 1
 
     for i in neg_image_urls.read().split('\n'):
         try:
-            print(i)
+            print("{:d} | {:s}".format(pic_num, i))
             im_name = "{:s}/{:s}".format(directory, i.split("/")[-1])
             if im_name in existing:
                 print("Existing")
+                pic_num += 1
                 continue
             urllib.request.urlretrieve(i, im_name)
+            pic_num += 1
 
         except Exception as e:
             print(str(e))
