@@ -9,7 +9,7 @@ def to_grayscale(in_directory, out_directory):
 	if not os.path.exists(out_directory):
 		os.makedirs(out_directory)
 
-	images = glob.glob("{:s}/*".format(in_directory))
+	images = glob.glob("{:s}/*.jpg".format(in_directory))
 
 	for im in images:
 		new_im = "{:s}/{:s}".format(out_directory, im.split("/")[-1])
