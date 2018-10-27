@@ -10,13 +10,18 @@ def to_grayscale(in_directory, out_directory):
 		os.makedirs(out_directory)
 
 	images = glob.glob("{:s}/*.jpg".format(in_directory))
+	img_num = 1
 
 	for im in images:
-		new_im = "{:s}/{:s}".format(out_directory, im.split("/")[-1])
-		print("{:s} -> {:s}".format(im, new_im))
-		im_gray = cv2.imread(im, cv2.IMREAD_GRAYSCALE)
-		im_resized = cv2.resize(im_gray, (100, 100))
-		cv2.imwrite(new_im, im_resized)
+		try:
+			new_im = "{:s}/{:s}".format(out_directory, im.split("/")[-1])
+			print("{:d} | {:s} -> {:s}".format(img_num, im, new_im))
+			im_gray = cv2.imread(im, cv2.IMREAD_GRAYSCALE)
+			im_resized = cv2.resize(im_gray, (100, 100))
+			cv2.imwrite(new_im, im_resized)
+			img_num += 1
+		except Exception as e:
+			print(str(e))
 
 parser = argparse.ArgumentParser(description="Grayscale images")
 parser.add_argument("in_directory", type=str)
