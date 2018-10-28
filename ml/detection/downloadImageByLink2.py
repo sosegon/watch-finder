@@ -18,6 +18,8 @@ def store_raw_images(directory, list_file):
         try:
             print("{:d} | {:s}".format(pic_num, i))
             im_name = "{:s}/{:s}".format(directory, i.split("/")[-1])
+            if im_name.split(".")[-1] != "jpg":
+                continue
             if im_name in existing:
                 print("Existing")
                 pic_num += 1
