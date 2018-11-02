@@ -25,7 +25,7 @@ Once the images have been collected and filtered, they have to be prepared. Firs
 
 Then, positive samples have to be created and stored in a folder named samples. In this process, the positive images (watches) are integrated into the negative ones (background). This integration is done randomly in terms of the position and rotation of the watches. This is done by running the following command:
 
-`perl bin/createsamples.pl positives.txt negatives.txt samples 1500 "opencv_createsamples -bgcolor 0 -bgthresh 0 -maxxangle 1.1 -maxyangle 1.1 maxzangle 0.5 -maxidev 40 -w 80 -h 40"`
+`perl bin/createsamples.pl positives.txt negatives.txt samples 25000 "opencv_createsamples -bgcolor 0 -bgthresh 0 -maxxangle 1.1 -maxyangle 1.1 maxzangle 0.5 -maxidev 40 -w 16 -h 16"`
 
 Finally, all those samples have to be merged into a single file using the following command:
 
@@ -34,4 +34,19 @@ Finally, all those samples have to be merged into a single file using the follow
 ## Training
 The final step is done with the following command:
 
-`opencv_traincascade -data classifier -vec samples.vec -bg negatives.txt   -numStages 20 -minHitRate 0.999 -maxFalseAlarmRate 0.5 -numPos 1000   -numNeg 600 -w 20 -h 20 -mode ALL -precalcValBufSize 1024   -precalcIdxBufSize 1024`
+`opencv_traincascade -data classifier -vec samples.vec -bg negatives.txt   -numStages 20 -minHitRate 0.999 -maxFalseAlarmRate 0.5 -numPos 1000   -numNeg 600 -w 16 -h 16 -mode ALL -precalcValBufSize 1024   -precalcIdxBufSize 1024`
+
+## Appendix
+
+Build opencv from source to get access to the utilities. Use the following command:
+
+`cmake -D CMAKE_BUILD_TYPE=RELEASE \
+	-D CMAKE_INSTALL_PREFIX=/usr/local \
+	-D INSTALL_PYTHON_EXAMPLES=ON \
+	-D INSTALL_C_EXAMPLES=OFF \
+	-D OPENCV_EXTRA_MODULES_PATH=~/shared/software/opencv_contrib-3.4.3/modules \
+	-D PYTHON_EXECUTABLE=~/shared/.virtualenvs/cv_source/bin/python \
+	-D WITH_TBB=ON \
+	-D BUILD_PYTHON_SUPPORT=ON \
+	-D BUILD_EXAMPLES=ON ..`
+
