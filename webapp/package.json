@@ -30,5 +30,10 @@
     "gulp-babel": "^7.0.0",
     "gulp-react": "^3.1.0",
     "gulp-sass": "^4.0.1"
+  },
+  "dependencies": {
+    "@tensorflow/tfjs": "^0.13.3",
+    "@tensorflow/tfjs-node-gpu": "^0.1.19",
+    "tfjs-yolo-tiny": "^1.0.1"
   }
 }
