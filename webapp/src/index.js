@@ -1,3 +1,12 @@
+require('./main.scss');
+let {Utils} = require("./utils.js");
+let {Detector} = require("./detector.js");
+let React = require('react');
+let ReactDOM = require('react-dom');
+
+let utils = new Utils('errorMessage');
+let detector = new Detector("cascade.xml", utils);
+
 class FinderView extends React.Component {
 	constructor(props) {
 		super(props)
@@ -169,8 +178,5 @@ class FinderView extends React.Component {
 		);
 	}
 }
-
-let utils = new Utils('errorMessage');
-let detector = new Detector("cascade.xml", utils);
 
 let FinderViewRendered = ReactDOM.render(<FinderView />, document.getElementById('boardDiv'));

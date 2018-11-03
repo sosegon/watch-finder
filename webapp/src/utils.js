@@ -1,6 +1,5 @@
 // From https://docs.opencv.org/3.4/js_face_detection_camera.html
-
-function Utils(errorOutputId) { // eslint-disable-line no-unused-vars
+let Utils = function (errorOutputId) { // eslint-disable-line no-unused-vars
     let self = this;
     this.errorOutput = document.getElementById(errorOutputId);
 
@@ -189,4 +188,8 @@ function Utils(errorOutputId) { // eslint-disable-line no-unused-vars
 
         return final;
     };
+};
+
+module.exports = {
+    Utils: Utils
 };

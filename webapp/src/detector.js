@@ -45,3 +45,7 @@ class Detector {
 		return mats;
 	}
 }
+
+module.exports = {
+	Detector: Detector
+};
