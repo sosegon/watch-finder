@@ -109,6 +109,30 @@ class YoloDetector {
 
 		return boxes;
 	}
+	boxToRect(box){
+		const {
+			top, left, bottom, right, classProb, className,
+		} = box;
+		return new cv.Rect(
+			parseInt(left + 69),
+			parseInt(top),
+			parseInt(right - left),
+			parseInt(bottom - top)
+		);
+	}
+	extract(srcMat, box) {
+		let rect = this.boxToRect(box);
+		let dst = new cv.Mat();
+		dst = srcMat.roi(rect);
+		return dst;
+	}
+	drawBox(srcMat, canvas, box) {
+		let rect = this.boxToRect(box);
+		let point1 = new cv.Point(rect.x, rect.y);
+		let point2 = new cv.Point(rect.x + rect.width, rect.y + rect.height);
+		cv.rectangle(srcMat, point1, point2, [255, 0, 0, 255]);
+		cv.imshow(canvas, srcMat);
+	}
 }
 
 module.exports = {

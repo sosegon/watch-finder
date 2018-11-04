@@ -32,12 +32,18 @@ class FinderView extends React.Component {
 
 		// tf stuff
 		let boxes = await yoloDetector.detectObjects(videoElem);
+		boxes = boxes.filter(box => {return box.className === "clock";});
 
 		if(boxes.length > 0) {
-			detector.drawBoxes(srcMat, canvasOutput, boxes);
-			this.setState({step: 3, message: "Searching!"});
+			let watchMat = yoloDetector.extract(srcMat, boxes[0]);
+			let rect = yoloDetector.boxToRect(boxes[0]);
+			let highlighted = utils.highlightBox(srcMat, rect);
+			yoloDetector.drawBox(highlighted, canvasOutput, boxes[0]);
+
+			// detector.drawBoxes(srcMat, canvasOutput, boxes);
 			// TODO: Implemented the search, extract the watch
-			// this.search(srcMat);
+			this.search(srcMat);
+			this.setState({step: 3, message: "Searching!"});
 		} else {
 			this.setState({step: 0, message: "No watch detected!"});
 		}
@@ -138,14 +144,17 @@ class FinderView extends React.Component {
 		while(self.streaming) {
 			let boxes = await yoloDetector.detectObjects(videoElem);
 			self.clearRects();
-			boxes.forEach(box => {
+
+			boxes
+			.filter(box => {
+				return box.className === "clock";
+			})
+			.forEach(box => {
 				const {
-					top, left, bottom, right, classProb, className,
+					top, left, bottom, right, classProb, className
 			 	} = box;
 
-			 	if(className === "clock") {
-					self.drawRect(left, top, right-left, bottom-top);
-			 	}
+				self.drawRect(left, top, right-left, bottom-top);
 			});
 		}
 
