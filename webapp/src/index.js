@@ -30,8 +30,14 @@ class FinderView extends React.Component {
 		let cap = new cv.VideoCapture(videoElem);
 		cap.read(srcMat);
 
-		// tf stuff
-		let boxes = await yoloDetector.detectObjects(videoElem);
+		await this.detectWatch(videoElem, srcMat, canvasOutput);
+
+		this.stopCamera();
+		this.streaming = false;
+		this.clearRects();
+	}
+	async detectWatch(htmlElem, srcMat, canvasOutput) {
+		let boxes = await yoloDetector.detectObjects(htmlElem);
 		boxes = boxes.filter(box => {return box.className === "clock";});
 
 		if(boxes.length > 0) {
@@ -48,26 +54,6 @@ class FinderView extends React.Component {
 			this.setState({step: 0, message: "No watch detected!"});
 		}
 
-		this.stopCamera();
-		this.streaming = false;
-		this.clearRects();
-	}
-	detectWatch(srcMat) {
-		// This is the canvas where the video captured by the camera will be displayed
-		let canvasOutput = this.refs.canvasOutRef;
-
-		detector.detect(srcMat);
-		let detections = detector.detections;
-		if(detections.size() > 0) {
-			let watchMat = detector.extract(srcMat)[0];
-			let detection = detections.get(0);
-			let final = utils.highlightBox(srcMat, detection);
-			detector.drawDetections(final, canvasOutput, 1);
-			this.setState({step: 3, message: "Searching!"});
-			this.search(watchMat);
-		} else {
-			this.setState({step: 0, message: "No watch detected!"});
-		}
 	}
 	search(watchMat) {
 		// TODO: Implement the search
@@ -193,7 +179,7 @@ class FinderView extends React.Component {
 				img.onload = function() {
 					ctx.drawImage(img, 0, 0, width, height);
 					self.setState({step: 2, message: ""});
-					self.detectWatch(new cv.imread(canvasOutput));
+					self.detectWatch(canvasOutput, new cv.imread(canvasOutput), canvasOutput);
 				};
 				img.src = e.target.result;
 			};
