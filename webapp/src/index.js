@@ -1,9 +1,8 @@
-import * as tf from '@tensorflow/tfjs';
-import yolo, {downloadModel} from "./index_yolo";
+import {downloadModel} from "./index_yolo";
 
 require('./main.scss');
 let {Utils} = require("./utils.js");
-let {Detector} = require("./detector.js");
+let {Detector, YoloDetector} = require("./detector.js");
 let React = require('react');
 let ReactDOM = require('react-dom');
 
@@ -32,7 +31,7 @@ class FinderView extends React.Component {
 		cap.read(srcMat);
 
 		// tf stuff
-		let boxes = await this.detectObjects();
+		let boxes = await yoloDetector.detectObjects(videoElem);
 
 		if(boxes.length > 0) {
 			detector.drawBoxes(srcMat, canvasOutput, boxes);
@@ -132,39 +131,12 @@ class FinderView extends React.Component {
 		}
 		setTimeout(loop, 0);
 	}
-	cropImage(img) {
-		const size = Math.min(img.shape[0], img.shape[1]);
-		const centerHeight = img.shape[0] / 2;
-		const beginHeight = centerHeight - (size / 2);
-		const centerWidth = img.shape[1] / 2;
-		const beginWidth = centerWidth - (size / 2);
-		return img.slice([beginHeight, beginWidth, 0], [size, size, 3]);
-	}
-	captureVideo() {
-		let videoElem = this.refs.videoRef;
-		let self = this;
-
-		return tf.tidy(() => {
-			// Reads the image as a Tensor from the webcam <video> element.
-			const webcamImage = tf.fromPixels(videoElem);
-
-			// Crop the image so we're using the center square of the rectangular
-			// webcam.
-			const croppedImage = self.cropImage(webcamImage);
-
-			// Expand the outer most dimension so we have a batch size of 1.
-			const batchedImage = croppedImage.expandDims(0);
-
-			// Normalize the image between -1 and 1. The image comes in between 0-255,
-			// so we divide by 127 and subtract 1
-			return batchedImage.toFloat().div(tf.scalar(255));
-		});
-	}
 	async run() {
 		let self = this;
+		let videoElem = this.refs.videoRef;
 
 		while(self.streaming) {
-			let boxes = await self.detectObjects();
+			let boxes = await yoloDetector.detectObjects(videoElem);
 			self.clearRects();
 			boxes.forEach(box => {
 				const {
@@ -179,21 +151,6 @@ class FinderView extends React.Component {
 
 		// clear any remaining rect, useful when shooting
 		self.clearRects();
-	}
-	async detectObjects() {
-		const inputImage = this.captureVideo();
-
-		const t0 = performance.now();
-		const boxes = await yolo(inputImage, model);
-		inputImage.dispose();
-		const t1 = performance.now();
-
-		console.log("YOLO inference took " + (t1 - t0) + " milliseconds.");
-		console.log('tf.memory(): ', tf.memory());
-
-		await tf.nextFrame();
-
-		return boxes;
 	}
 	clearRects() {
 		const rects = document.getElementsByClassName('rect');
@@ -287,10 +244,11 @@ class FinderView extends React.Component {
 	}
 }
 //
-let model;
+let yoloDetector;
 (async function main() {
   try {
-	model = await downloadModel();
+	let model = await downloadModel();
+	yoloDetector = new YoloDetector(model);
 	doneLoading();
   } catch(e) {
 	console.error(e);
