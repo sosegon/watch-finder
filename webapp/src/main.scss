@@ -119,3 +119,17 @@ body {
     animation-name: fade;
     animation-duration: 1.2s;
 }
+
+#loading-message {
+  text-align: center;
+}
+
+.spin {
+  width: 120px;
+  height: 120px;
+  @include animation(spin 2s linear infinite);
+}
+
+@keyframes spin {
+  100% {transform: rotate(360deg);}
+}

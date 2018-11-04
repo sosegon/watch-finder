@@ -103,7 +103,7 @@ class FinderView extends React.Component {
 			.forEach(box => {
 				const {
 					top, left, bottom, right, classProb, className
-			 	} = box;
+				} = box;
 
 				self.drawRect(left, top, right-left, bottom-top);
 			});
@@ -207,6 +207,7 @@ class FinderView extends React.Component {
 let yoloDetector;
 (async function main() {
   try {
+	addLoadingVisual();
 	let model = await downloadModel();
 	yoloDetector = new YoloDetector(model);
 	doneLoading();
@@ -218,8 +219,27 @@ let yoloDetector;
 
 function doneLoading() {
 	let FinderViewRendered = ReactDOM.render(<FinderView />, document.getElementById('boardDiv'));
+	let loadingMessage = document.getElementById("loading-message");
+	loadingMessage.className =  "block-hid";
 }
 
 function showError() {
   // TODO: Implement error message
+}
+
+function addLoadingVisual() {
+	let container = document.getElementById("loading-message");
+
+	let message = document.createElement('span');
+	message.innerText = 'Loading module ...';
+
+	let image = document.createElement('img');
+	image.src = "assets/logo.png";
+	image.className = "spin";
+
+	let imageContainer = document.createElement('div');
+	imageContainer.appendChild(image);
+
+	container.appendChild(message);
+	container.appendChild(imageContainer);
 }
