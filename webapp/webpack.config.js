@@ -1,6 +1,7 @@
 var path = require('path');
 var webpack = require('webpack');
 const HtmlWebPackPlugin = require("html-webpack-plugin");
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
   entry: {
@@ -42,6 +43,7 @@ module.exports = {
     }),
     new webpack.ProvidePlugin({
       "React" : "react"
-    })
+    }),
+    new CopyWebpackPlugin([{from: 'assets', to: 'assets'}])
   ]
 };
