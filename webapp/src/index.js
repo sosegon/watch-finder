@@ -2,12 +2,11 @@ import {downloadModel} from "./index_yolo";
 
 require('./main.scss');
 let {Utils} = require("./utils.js");
-let {Detector, YoloDetector} = require("./detector.js");
+let {YoloDetector} = require("./detector.js");
 let React = require('react');
 let ReactDOM = require('react-dom');
 
 let utils = new Utils('errorMessage');
-let detector = new Detector("cascade.xml", utils);
 
 class FinderView extends React.Component {
 	constructor(props) {
@@ -72,7 +71,6 @@ class FinderView extends React.Component {
 				videoElem.play();
 				self.stream = stream;
 				self.streaming = true;
-				// self.processVideo();
 				self.run();
 				self.setState({step: 1, message: ""});
 			})
@@ -89,39 +87,6 @@ class FinderView extends React.Component {
 		if(this.stream) {
 			this.stream.getVideoTracks()[0].stop();
 		}
-	}
-	processVideo() {
-		let videoElem = this.refs.videoRef;
-		let height = videoElem.height;
-		let width = videoElem.width;
-
-		// Where we draw what is captured by the camera
-		let canvasOutput = this.refs.canvasOutRef;
-
-		// OpenCV elements
-		let srcMat = new cv.Mat(height, width, cv.CV_8UC4);
-		let cap = new cv.VideoCapture(videoElem);
-
-		let self = this;
-		const FPS = 30;
-		let loop = function() {
-
-			if(!self.streaming) {
-				srcMat.delete();
-				return;
-			}
-
-			let begin = Date.now();
-			cap.read(srcMat);
-
-			detector.detect(srcMat);
-			detector.drawDetections(srcMat, canvasOutput, 1);
-
-			// schedule next one.
-			let delay = 100/FPS - (Date.now() - begin);
-			setTimeout(loop, delay);
-		}
-		setTimeout(loop, 0);
 	}
 	async run() {
 		let self = this;
