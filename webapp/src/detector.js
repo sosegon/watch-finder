@@ -34,7 +34,21 @@ class Detector {
 		}
 		cv.imshow(canvas, srcMat)
 	}
-	extract(srcMat) {
+	drawBoxes(srcMat, canvas, boxes) {
+		boxes.forEach(box => {
+			const {
+				top, left, bottom, right, classProb, className,
+			} = box;
+			if(className === "clock") {
+				// 69 corrects for the aspect ratio
+				let point1 = new cv.Point(left + 69, top);
+				let point2 = new cv.Point(right + 69, bottom);
+				cv.rectangle(srcMat, point1, point2, [255, 0, 0, 255]);
+			}
+		});
+		cv.imshow(canvas, srcMat);
+	}
+	extract(srcMat, detections) {
 		let mats = [];
 		for (let i = 0; i < this.detections.size(); ++i) {
 			let object = this.detections.get(i);
