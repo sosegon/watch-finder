@@ -11,7 +11,7 @@ Instructions from [here](https://www.pyimagesearch.com/2018/01/29/scalable-keras
 In another environment
 
 `pip install numpy`
-`pip install opencv-contrib-python==3.4.3.18`
+`pip install opencv-contrib-python==3.4.2.16` This is the version that has SIFT function enabled
 `pip install scipy h5py`
 `pip install flask gevent`
 `pip install imutils requests`
