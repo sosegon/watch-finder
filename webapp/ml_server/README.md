@@ -16,3 +16,8 @@ In another environment
 `pip install flask gevent`
 `pip install imutils requests`
 `pip install redis`
+
+## Launching a web server
+Instructions are pretty clear [here](https://www.pyimagesearch.com/2018/02/05/deep-learning-production-keras-redis-flask-apache/)
+
+Be aware of ModuleNotFoundError,whihch is solved in the comments section
