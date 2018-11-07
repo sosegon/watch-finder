@@ -13,7 +13,10 @@ class SIFTDescriptor:
             kps = self.sift.detect(image, None)
             kps = sorted(kps, key=lambda x: -x.response)[:self.vector_size]
             kps, dsc = self.sift.compute(image, kps)
-            dsc = dsc.flatten()
+            if dsc is not None:
+                dsc = dsc.flatten()
+            else:
+                raise ValueError("No descriptor found for image")
 
             needed_size = (self.vector_size * 128) # 128 is the size of a SIFT descriptor
             if dsc.size < needed_size:
