@@ -10,6 +10,7 @@ import io
 import cv2
 import pickle
 import sys
+import argparse
 from common.vision import SIFTDescriptor, Searcher, make_square
 
 IMAGE_DTYPE = "uint8"
@@ -41,9 +42,9 @@ def prepare_image(image_gray, size):
 	image_gray = make_square(image_gray)
 	return cv2.resize(image_gray, (size, size))
 
-def search_process():
+def search_process(db_path):
 	descriptor = SIFTDescriptor(32)
-	searcher = Searcher()
+	searcher = Searcher(db_path)
 
 	# continues polling images to search
 	while True:
@@ -109,9 +110,14 @@ def search():
 
 		return flask.jsonify(data)
 
+parser = argparse.ArgumentParser(description="Computer vision server")
+parser.add_argument("db_path", type=str)
+args = parser.parse_args()
+db_path = args.db_path
+
 if __name__ == '__main__':
 	print('Starting cv model...')
-	t = Thread(target=search_process, args=())
+	t = Thread(target=search_process, args=(db_path,))
 	t.daemon = True
 	t.start()
 
