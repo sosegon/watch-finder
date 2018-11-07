@@ -1,46 +1,17 @@
-from threading import Thread
-import numpy as np
-import base64
-import flask
 import redis
-import uuid
 import time
 import json
-import io
-import cv2
-import pickle
-import sys
-import argparse
-from common.vision import SIFTDescriptor, Searcher, make_square
+import watch_finder_settings as settings
+from common.vision import SIFTDescriptor, Searcher, base64_decode_image
 
 IMAGE_DTYPE = "uint8"
-IMAGE_SIZE = 300
+IMAGE_QUEUE = settings.IMAGE_QUEUE
+BATCH_SIZE = settings.BATCH_SIZE
+SERVER_SLEEP = settings.SERVER_SLEEP
+SIFT_DB = settings.SIFT_DB
 
-# initialize constants used for server queuing
-IMAGE_QUEUE = "image_queue"
-BATCH_SIZE = 32
-SERVER_SLEEP = 0.25
-CLIENT_SLEEP = 0.25
-
-app = flask.Flask(__name__)
-db = redis.StrictRedis(host='localhost', port=6379, db=0)
-
-def base64_encode_image(a):
-	return base64.b64encode(a).decode('utf-8')
-
-def base64_decode_image(a, dtype, shape):
-	if sys.version_info.major == 3:
-		a = bytes(a, encoding='utf-8')
-
-	a = np.frombuffer(base64.decodestring(a), dtype=dtype)
-	a = a.reshape(shape)
-
-	return a
-
-def prepare_image(image_gray, size):
-
-	image_gray = make_square(image_gray)
-	return cv2.resize(image_gray, (size, size))
+db = redis.StrictRedis(host=settings.REDIS_HOST,
+	port=settings.REDIS_PORT, db=settings.REDIS_DB)
 
 def search_process(db_path):
 	descriptor = SIFTDescriptor(32)
@@ -75,51 +46,9 @@ def search_process(db_path):
 
 		time.sleep(SERVER_SLEEP)
 
-
-@app.route("/search", methods=['POST'])
-def search():
-	data = {'success': False}
-
-	if flask.request.method == 'POST':
-		if flask.request.files.get('image'):
-			image = flask.request.files['image'].read()
-			image = np.fromstring(image, np.uint8)
-			image = cv2.imdecode(image, cv2.IMREAD_GRAYSCALE)
-
-			image = prepare_image(image, IMAGE_SIZE)
-			shape = image.shape
-			image = image.copy(order='C')
-
-			k = str(uuid.uuid4())
-			d = {'id': k, 'image': base64_encode_image(image), 'shape': shape}
-			db.rpush(IMAGE_QUEUE, json.dumps(d))
-
-			while True:
-				output = db.get(k)
-
-				if output is not None:
-					output = output.decode('utf-8')
-					data['predictions'] = json.loads(output)
-
-					db.delete(k)
-					break
-
-				time.sleep(CLIENT_SLEEP)
-
-			data['success'] = True
-
-		return flask.jsonify(data)
-
-parser = argparse.ArgumentParser(description="Computer vision server")
-parser.add_argument("db_path", type=str)
-args = parser.parse_args()
-db_path = args.db_path
-
 if __name__ == '__main__':
-	print('Starting cv model...')
-	t = Thread(target=search_process, args=(db_path,))
-	t.daemon = True
-	t.start()
-
-	print('Starting web service...')
-	app.run()
+	# print('Starting cv model...')
+	# t = Thread(target=search_process, args=(db_path,))
+	# t.daemon = True
+	# t.start()
+	search_process(SIFT_DB)
