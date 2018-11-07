@@ -28,7 +28,7 @@ class SIFTDescriptor:
         return dsc
 
 class Searcher:
-    def __init__(self, index_path="./features.pck"):
+    def __init__(self, index_path):
         self.index = pickle.loads(open(index_path, "rb").read())
 
     def search(self, query_features):
