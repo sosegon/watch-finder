@@ -5,11 +5,11 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
   entry: {
-    index: path.join(__dirname, './src/index.js')
+    index: path.join(__dirname, './src/js/index.js')
   },
   output: {
     filename: 'build.js',
-    path: path.join(__dirname, '/dist')
+    path: path.join(__dirname, '/dist/js/')
   },
   module: {
     rules: [
@@ -18,7 +18,7 @@ module.exports = {
         use: [{ loader: "html-loader", options: { minimize: true } }]
       },
       {
-        exclude: /node_modules/,
+        exclude: [/node_modules/, '/src/js/opencv.js'], /*opencv is big and has to be copied*/
         test: /\.js$/,
         loader: 'babel-loader'
       },
@@ -37,13 +37,12 @@ module.exports = {
     ]
   },
   plugins: [
-    new HtmlWebPackPlugin({
-      template: "src/index.html",
-      filename: "./index.html"
-    }),
     new webpack.ProvidePlugin({
       "React" : "react"
     }),
-    new CopyWebpackPlugin([{from: 'assets', to: 'assets'}])
+    new CopyWebpackPlugin([
+      {from: 'src/assets/', to: '../assets/'},
+      {from: 'src/js/opencv.js', to: 'opencv.js'}
+    ])
   ]
 };
