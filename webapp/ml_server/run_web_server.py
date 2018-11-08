@@ -13,7 +13,8 @@ IMAGE_SIZE = settings.IMAGE_SIZE
 IMAGE_QUEUE = settings.IMAGE_QUEUE
 CLIENT_SLEEP = settings.CLIENT_SLEEP
 
-app = flask.Flask(__name__)
+app = flask.Flask(__name__, template_folder='../static/src',
+	static_folder='../static/dist')
 db = redis.StrictRedis(host=settings.REDIS_HOST,
 	port=settings.REDIS_PORT, db=settings.REDIS_DB)
 
@@ -23,7 +24,7 @@ def prepare_image(image_gray, size):
 
 @app.route("/")
 def homepage():
-	return 'Welcome to watch-finder module!'
+	return flask.render_template('index.html')
 
 @app.route("/search", methods=['POST'])
 def search():

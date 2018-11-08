@@ -208,8 +208,10 @@ let yoloDetector;
 (async function main() {
   try {
 	addLoadingVisual();
-	let model = await downloadModel();
+
+	let model = await downloadModel(assetUrl('model'));
 	yoloDetector = new YoloDetector(model);
+
 	doneLoading();
   } catch(e) {
 	console.error(e);
@@ -234,7 +236,7 @@ function addLoadingVisual() {
 	message.innerText = 'Loading module ...';
 
 	let image = document.createElement('img');
-	image.src = "assets/logo.png";
+	image.src = assetUrl('logo');
 	image.className = "spin";
 
 	let imageContainer = document.createElement('div');
@@ -242,4 +244,11 @@ function addLoadingVisual() {
 
 	container.appendChild(message);
 	container.appendChild(imageContainer);
+}
+
+// This is a workaround to get the url of assets.
+// The url are passed to the html template as flask parameters.
+function assetUrl(domElemId) {
+	let domElem = document.getElementById(domElemId);
+	return domElem.getAttribute('url')
 }

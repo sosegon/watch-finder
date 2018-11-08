@@ -10,6 +10,9 @@
 	<div id="loading-message">
 	</div>
     <div id="boardDiv" style=""/>
-    <script src="opencv.js"></script>
+   	<a id="model" url="{{ url_for('static', filename='model.json')}}"></a>
+   	<a id="logo" url="{{ url_for('static', filename='assets/logo.png')}}"></a>
+    <script src="{{ url_for('static', filename='opencv.js')}}"></script>
+    <script src="{{ url_for('static', filename='build.js')}}"></script>
 </body>
 </html>
