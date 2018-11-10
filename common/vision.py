@@ -110,3 +110,21 @@ def base64_decode_image(a, dtype, shape):
     a = a.reshape(shape)
 
     return a
+
+def base64_decode_image1(a, dtype, shape):
+    if sys.version_info.major == 3:
+        a = bytes(a, encoding='utf-8')
+
+    img_data = base64.b64decode(a)
+    img_array = np.fromstring(img_data, dtype=dtype)
+
+    return img_array.reshape(shape)
+
+def base64_decode_image2(a, dtype):
+    if sys.version_info.major == 3:
+        a = bytes(a, encoding='utf-8')
+
+    img_data = base64.b64decode(a)
+    img_array = np.fromstring(img_data, dtype=dtype)
+
+    return cv2.imdecode(img_array, cv2.IMREAD_COLOR)

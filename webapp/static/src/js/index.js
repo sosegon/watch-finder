@@ -47,7 +47,7 @@ class FinderView extends React.Component {
 
 			// detector.drawBoxes(srcMat, canvasOutput, boxes);
 			// TODO: Implemented the search, extract the watch
-			this.search(srcMat);
+			this.search(watchMat);
 			this.setState({step: 3, message: "Searching!"});
 		} else {
 			this.setState({step: 0, message: "No watch detected!"});
@@ -56,6 +56,39 @@ class FinderView extends React.Component {
 	}
 	search(watchMat) {
 		// TODO: Implement the search
+		let canvasAux = this.refs.canvasAuxRef;
+		canvasAux.width = watchMat.cols;
+		canvasAux.height = watchMat.rows;
+
+		let grayMat = new cv.Mat();
+		cv.cvtColor(watchMat, grayMat, cv.COLOR_RGB2GRAY);
+
+		cv.imshow(canvasAux, grayMat);
+		let base64 = canvasAux.toDataURL("image/jpeg");
+		base64 = base64.split(',')[1]; // remove header
+		let dims = [watchMat.rows, watchMat.cols, grayMat.channels()];
+
+		let form = new FormData();
+		form.append("data", base64);
+		form.append("dimensions", dims.join(','));
+
+		fetch('/search' , {
+			method: 'POST',
+			body: form
+		}).then((response) => {
+			if (response.status >= 200 && response.status <= 302) {
+            	return response;
+          	} else {
+            	var error = new Error(response.statusText);
+            	error.response = response;
+            	throw error;
+          	}
+		}).then((response) => {
+			return response.text().then((text) => {
+				console.log(text);
+			})
+		});
+
 		let self = this;
 		setTimeout(() => {
 			self.setState({step: 0, message: ""});
@@ -187,6 +220,7 @@ class FinderView extends React.Component {
 				<div id="video-wrapper" ref="videoWrapperRef" height="416" width="554">
 					<video className={videoSourceClass} ref="videoRef" height="416" width="554"></video>
 					<canvas className={canvasClass} ref="canvasOutRef" height="416" width="554"></canvas>
+					<canvas className="block-hid" ref="canvasAuxRef" height="416" width="554"></canvas>
 				</div>
 				<div className={sourceButtonsClass}>
 					<span className="button" id="camera-button" onClick={this.startCamera.bind(this)}></span>

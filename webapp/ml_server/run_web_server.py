@@ -6,9 +6,11 @@ import uuid
 import time
 import json
 import cv2
+import sys
 import watch_finder_settings as settings
-from common.vision import make_square, base64_encode_image
+from common.vision import make_square, base64_encode_image, base64_decode_image2
 
+IMAGE_DTYPE = settings.IMAGE_DTYPE
 IMAGE_SIZE = settings.IMAGE_SIZE
 IMAGE_QUEUE = settings.IMAGE_QUEUE
 CLIENT_SLEEP = settings.CLIENT_SLEEP
@@ -31,12 +33,16 @@ def search():
 	data = {'success': False}
 
 	if flask.request.method == 'POST':
-		if flask.request.files.get('image'):
-			image = flask.request.files['image'].read()
-			image = np.fromstring(image, np.uint8)
-			image = cv2.imdecode(image, cv2.IMREAD_GRAYSCALE)
+		if flask.request.form['data']:
+			imBase64 = flask.request.form['data']
+			shape = flask.request.form['dimensions']
+			shape = tuple(list(map(int, shape.split(','))))
 
+			image = base64_decode_image2(imBase64, IMAGE_DTYPE)
+			image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 			image = prepare_image(image, IMAGE_SIZE)
+			image = image.astype(IMAGE_DTYPE) # to properly decode in the cv server
+
 			shape = image.shape
 			image = image.copy(order='C')
 
@@ -58,6 +64,32 @@ def search():
 
 			data['success'] = True
 
+		# if flask.request.files.get('image'):
+		# 	image = flask.request.files['image'].read()
+		# 	image = np.fromstring(image, np.uint8)
+		# 	image = cv2.imdecode(image, cv2.IMREAD_GRAYSCALE)
+
+		# 	image = prepare_image(image, IMAGE_SIZE)
+		# 	shape = image.shape
+		# 	image = image.copy(order='C')
+
+		# 	k = str(uuid.uuid4())
+		# 	d = {'id': k, 'image': base64_encode_image(image), 'shape': shape}
+		# 	db.rpush(IMAGE_QUEUE, json.dumps(d))
+
+		# 	while True:
+		# 		output = db.get(k)
+
+		# 		if output is not None:
+		# 			output = output.decode('utf-8')
+		# 			data['predictions'] = json.loads(output)
+
+		# 			db.delete(k)
+		# 			break
+
+		# 		time.sleep(CLIENT_SLEEP)
+
+		# 	data['success'] = True
 		return flask.jsonify(data)
 
 if __name__ == '__main__':

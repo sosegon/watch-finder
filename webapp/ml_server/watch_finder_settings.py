@@ -3,6 +3,7 @@ REDIS_PORT = 6379
 REDIS_DB = 0
 
 # Constants used for server queuing
+IMAGE_DTYPE = 'uint8'
 IMAGE_SIZE = 300
 IMAGE_QUEUE = "image_queue"
 BATCH_SIZE = 32
