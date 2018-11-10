@@ -2,7 +2,7 @@ import redis
 import time
 import json
 import watch_finder_settings as settings
-from common.vision import SIFTDescriptor, Searcher, base64_decode_image1
+from common.vision import SIFTDescriptor, Searcher, base64_decode_image_server
 
 IMAGE_DTYPE = settings.IMAGE_DTYPE
 IMAGE_QUEUE = settings.IMAGE_QUEUE
@@ -24,7 +24,7 @@ def search_process(db_path):
 
 		for q in queue:
 			q = json.loads(q.decode('utf-8'))
-			image = base64_decode_image1(q['image'], IMAGE_DTYPE, q['shape'])
+			image = base64_decode_image_server(q['image'], IMAGE_DTYPE, q['shape'])
 			features = descriptor.describe(image)
 			query_results = searcher.search(features)
 			results[q["id"]] = query_results
