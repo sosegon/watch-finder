@@ -3,6 +3,7 @@ import pickle
 import numpy as np
 import base64
 import sys
+import math
 
 class SIFTDescriptor:
     def __init__(self, vector_size):
