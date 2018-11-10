@@ -35,9 +35,6 @@ def search():
 	if flask.request.method == 'POST':
 		if flask.request.form['data']:
 			imBase64 = flask.request.form['data']
-			shape = flask.request.form['dimensions']
-			shape = tuple(list(map(int, shape.split(','))))
-
 			image = base64_decode_image_client(imBase64, IMAGE_DTYPE)
 			image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 			image = prepare_image(image, IMAGE_SIZE)

@@ -66,11 +66,9 @@ class FinderView extends React.Component {
 		cv.imshow(canvasAux, grayMat);
 		let base64 = canvasAux.toDataURL("image/jpeg");
 		base64 = base64.split(',')[1]; // remove header
-		let dims = [watchMat.rows, watchMat.cols, grayMat.channels()];
 
 		let form = new FormData();
 		form.append("data", base64);
-		form.append("dimensions", dims.join(','));
 
 		fetch('/search' , {
 			method: 'POST',
