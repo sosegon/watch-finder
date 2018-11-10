@@ -10,4 +10,4 @@ BATCH_SIZE = 32
 SERVER_SLEEP = 0.25
 CLIENT_SLEEP = 0.25
 
-SIFT_DB = '../../ml/ethos_grays_square.pck'
+SIFT_DB = '../../ml/ethos_grays_square2.pck'

@@ -34,9 +34,11 @@ def search_process(db_path):
 				output = []
 
 				five_results = result[:5]
-				alikes = []
+				alikes = {}
 				for r in five_results:
-					alikes.append(r[-1].split('/')[-1])
+					watch_name = r[-1].split('/')[-1]
+					# alikes[watch_name] = get_encoded_image(watch_name)
+					alikes[watch_name] = r[-1]
 
 				output.append({'imageID': imageID, 'results': alikes})
 

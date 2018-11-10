@@ -16,7 +16,7 @@ class FinderView extends React.Component {
 	setup() {
 		// The step indicates the state of the GUI when interacting
 		// with the user: 0 = idle, 1 = streaming, 2 = file, 3 = processing
-		this.state = {step: 0, message: ""};
+		this.state = {step: 0, message: "", collection: []};
 	}
 	async shoot() {
 		let videoElem = this.refs.videoRef;
@@ -48,13 +48,14 @@ class FinderView extends React.Component {
 			// detector.drawBoxes(srcMat, canvasOutput, boxes);
 			// TODO: Implemented the search, extract the watch
 			this.search(watchMat);
-			this.setState({step: 3, message: "Searching!"});
+			this.setState({step: 3, message: "Searching!", collection: []});
 		} else {
-			this.setState({step: 0, message: "No watch detected!"});
+			this.setState({step: 0, message: "No watch detected!", collection: []});
 		}
 
 	}
 	search(watchMat) {
+		let self = this;
 		// TODO: Implement the search
 		let canvasAux = this.refs.canvasAuxRef;
 		canvasAux.width = watchMat.cols;
@@ -83,13 +84,28 @@ class FinderView extends React.Component {
           	}
 		}).then((response) => {
 			return response.text().then((text) => {
-				console.log(text);
+				let res = JSON.parse(text);
+				let predictions = res['predictions'];
+				let collection = [];
+				for(let pred of predictions) {
+					console.log(pred['imageID']);
+					let watches = pred['results'];
+					let watchList = [];
+					for(let watchName in watches) {
+						const url = watches[watchName];
+						const name = watchName.split(".")[0];
+						const watchItem = {'name': name, 'url': url};
+						watchList.push(watchItem);
+					}
+					collection.push(watchList);
+				}
+
+				this.setState({step: 0, message: "", collection: collection});
 			})
 		});
 
-		let self = this;
 		setTimeout(() => {
-			self.setState({step: 0, message: ""});
+			self.setState({step: 0, message: "", collection: []});
 		}, 500);
 	}
 	startCamera() {
@@ -103,7 +119,7 @@ class FinderView extends React.Component {
 				self.stream = stream;
 				self.streaming = true;
 				self.run();
-				self.setState({step: 1, message: ""});
+				self.setState({step: 1, message: "", collection: []});
 			})
 			.catch(function(err) {
 				console.log("An error occured! " + err);
@@ -174,7 +190,7 @@ class FinderView extends React.Component {
 				img.crossOrigin = 'anonymous';
 				img.onload = function() {
 					ctx.drawImage(img, 0, 0, width, height);
-					self.setState({step: 2, message: ""});
+					self.setState({step: 2, message: "", collectio: []});
 					self.detectWatch(canvasOutput, new cv.imread(canvasOutput), canvasOutput);
 				};
 				img.src = e.target.result;
@@ -231,7 +247,49 @@ class FinderView extends React.Component {
 				<div className="message-container">
 					{message}
 				</div>
+				<WatchTable watchCollection={this.state.collection} />
 			</div>
+		)
+	}
+}
+
+class WatchItem extends React.Component {
+	render() {
+		const watch = this.props.watch;
+		const name = <span>{watch.name}</span>;
+		const image = <img src={watch.url} width="100px"/>;
+
+		return (
+			<div>
+				{image}
+			</div>
+		);
+	}
+}
+
+class WatchRow extends React.Component {
+	render() {
+		const watches = this.props.watchList.map((watch) => {
+			return <td><WatchItem watch={watch} /></td>
+		});
+		return(
+			<tr>
+				{watches}
+			</tr>
+		);
+	}
+}
+
+class WatchTable extends React.Component {
+	render() {
+		const rows = this.props.watchCollection.map((watchList) => {
+			return <WatchRow watchList={watchList} />
+		});
+
+		return(
+			<table>
+				{rows}
+			</table>
 		);
 	}
 }
