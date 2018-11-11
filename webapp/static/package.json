@@ -50,9 +50,7 @@
   },
   "dependencies": {
     "@tensorflow/tfjs": "^0.13.3",
-    "@tensorflow/tfjs-node-gpu": "^0.1.19",
     "react": "^15.0.1",
-    "react-dom": "^15.0.1",
-    "tfjs-yolo-tiny": "^1.0.1"
+    "react-dom": "^15.0.1"
   }
 }
