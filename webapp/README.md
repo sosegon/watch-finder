@@ -15,11 +15,11 @@ The web module has been implemented as a full stack solution using the following
 This part of the module is defined in the static folder with the following structure
 
     static
-        └── dist/
-        └── node_modules/
-        └── src/
-        └── .babelrc
-        └── package.json
+        |── dist/
+        |── node_modules/
+        |── src/
+        |── .babelrc
+        |── package.json
         └── webpack.config.js
 
 The folder `src` contains all the source files that will be bundled with webpack. The resulting files are located in the folder `dst`.
@@ -31,9 +31,9 @@ The configuration in `webpack.config.js` is quite standard. It is important to n
 The source files has the following self-descriptive structure:
 
     src
-      └── assets/
-      └── css/
-      └── js/
+      |── assets/
+      |── css/
+      |── js/
       └── index.html
 
 The folder `assets` contains images, but more importantly, it has the files that define the machine learning model. The file `model.json` has the architecture of the model, it defines the layers and other configurations. The files of the form `groupX-shardYofZ` contain the parameters of the model (weights). In total, all the files have a size around 40MB. This huge size is because the model is a general purpose one.
@@ -55,9 +55,9 @@ Finally, the file `index.html` is a template that defines a simple skeleton for 
 The back end is implemented with python scripts, it has the following structure:
 
     ml_server
-        └── run_cv_server.py
-        └── run_web_server.py
-        └── watch_finder_app.wsgi
+        |── run_cv_server.py
+        |── run_web_server.py
+        |── watch_finder_app.wsgi
         └── watch_finder_settings.py
 
 The following is a short description of each file:
@@ -72,11 +72,11 @@ The following is a short description of each file:
 The overall project has the following structure:
 
     watch-finder
-        └── common/
-        └── data/
-        └── ml/
+        |── common/
+        |── data/
+        |── ml/
         ├── webapp
-        |   └── ml_server/
+        |   |── ml_server/
         │   └── static/
         └── setup.py
 
@@ -138,7 +138,7 @@ Then, after `ServerAdmin` and `DocumentRoot`, add the following lines:
 
 Then, the service has to be restarted:
 
-    $ sudo service apache2 restart
+    sudo service apache2 restart
 
 With the apache and redis servers running, the `run_cv_server.py` has to be executed:
 
