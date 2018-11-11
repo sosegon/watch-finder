@@ -14,13 +14,13 @@ The web module has been implemented as a full stack solution using the following
 ### Front end
 This part of the module is defined in the static folder with the following structure
 
-	static
-		└── dist/
-		└── node_modules/
-		└── src/
-	    └── .babelrc
-	    └── package.json
-	    └── webpack.config.js
+    static
+        └── dist/
+        └── node_modules/
+        └── src/
+        └── .babelrc
+        └── package.json
+        └── webpack.config.js
 
 The folder `src` contains all the source files that will be bundled with webpack. The resulting files are located in the folder `dst`.
 
@@ -30,10 +30,10 @@ The configuration in `webpack.config.js` is quite standard. It is important to n
 
 The source files has the following self-descriptive structure:
 
-	src
-	  └── assets/
-	  └── css/
-	  └── js/
+    src
+      └── assets/
+      └── css/
+      └── js/
       └── index.html
 
 The folder `assets` contains images, but more importantly, it has the files that define the machine learning model. The file `model.json` has the architecture of the model, it defines the layers and other configurations. The files of the form `groupX-shardYofZ` contain the parameters of the model (weights). In total, all the files have a size around 40MB. This huge size is because the model is a general purpose one.
@@ -54,11 +54,11 @@ Finally, the file `index.html` is a template that defines a simple skeleton for 
 
 The back end is implemented with python scripts, it has the following structure:
 
-	ml_server
-		└── run_cv_server.py
-		└── run_web_server.py
-	    └── watch_finder_app.wsgi
-	    └── watch_finder_settings.py
+    ml_server
+        └── run_cv_server.py
+        └── run_web_server.py
+        └── watch_finder_app.wsgi
+        └── watch_finder_settings.py
 
 The following is a short description of each file:
 
@@ -71,14 +71,14 @@ The following is a short description of each file:
 
 The overall project has the following structure:
 
-	watch-finder
-		└── common/
-		└── data/
-	    └── ml/
-	    ├── webapp
-	    |	└── ml_server/
-	    │ 	└── static/
-	    └── setup.py
+    watch-finder
+        └── common/
+        └── data/
+        └── ml/
+        ├── webapp
+        |   └── ml_server/
+        │   └── static/
+        └── setup.py
 
 The folder `common` has python scripts with common functionalities to be used in other scripts. The folder `data` has the text files with the urls for the watches in the store. This folder has the images of the watches locally (they are not part of the remote repository). The folder `ml` contains scripts related to machine learning and computer vision; locally, it contains the pickle file that has the descriptors and urls of the watches of the store. Finally, `setup.py` is a script to configure the modules in `common` so they can be used in other part of the project.
 
@@ -91,11 +91,11 @@ The process to set the back end are pretty straightforward. This process is mean
 
 This component is necessary to store in memory the images sent by the clients. It can be with the following commands:
 
-	wget http://download.redis.io/redis-stable.tar.gz
-	tar xvzf redis-stable.tar.gz
-	cd redis-stable
-	make
-	sudo make install
+    wget http://download.redis.io/redis-stable.tar.gz
+    tar xvzf redis-stable.tar.gz
+    cd redis-stable
+    make
+    sudo make install
 
 The Redis server is started with the command `redis-server`. Validating Redis can be done with `redis-cli ping`, if the result is `PONG`, then everything is ok. The command `redis-cli flushall` is quite useful to remove previous elements from the memory.
 
@@ -103,17 +103,17 @@ The Redis server is started with the command `redis-server`. Validating Redis ca
 
 The project was developed with python3. It is important to create a virtual environment to work in. Then, the necessary libraries can be installed with the following commands
 
-	pip install numpy
-	pip install opencv-contrib-python==3.4.2.16 #This is the version that has SIFT function enabled
-	pip install flask gevent
-	pip install redis
+    pip install numpy
+    pip install opencv-contrib-python==3.4.2.16 #This is the version that has SIFT function enabled
+    pip install flask gevent
+    pip install redis
 
 ### Apache
 The web server can be set with the following commands:
 
-	sudo apt-get install apache2
-	sudo apt-gte install libapache2-mod-wsgi-py3
-	sudo a2enmod wsgi
+    sudo apt-get install apache2
+    sudo apt-gte install libapache2-mod-wsgi-py3
+    sudo a2enmod wsgi
 
 For ease, it is better to create a symlink to the back end folder in the directory where apache serves content: `/var/www/html`. This can be done with the following commands:
 
@@ -122,27 +122,27 @@ For ease, it is better to create a symlink to the back end folder in the directo
 
 The, the apache server has to be configuresd to point to the flask app. This is done by editing the file `/etc/apache2/sites-available/000-default.conf`. In the top of the file, add the following lines:
 
-	WSGIPythonHome /home/ubuntu/.virtualenvs/OUR_ENVIRONMENT/in
-	WSGIPythonPath /home/ubuntu/.virtualenvs/OUR_ENVIRONMENT/lib/python3.5/site-packages
+    WSGIPythonHome /home/ubuntu/.virtualenvs/OUR_ENVIRONMENT/in
+    WSGIPythonPath /home/ubuntu/.virtualenvs/OUR_ENVIRONMENT/lib/python3.5/site-packages
 
 Then, after `ServerAdmin` and `DocumentRoot`, add the following lines:
 
-	WSGIDaemonProcess watch_finder_app threads=10
-	WSGIScriptAlias / /var/www/html/watch-finder/watch_finder_app.wsgi
-	<Directory /var/www/html/watch-finder>
-		WSGIProcessGroup watch_finder_app
-		WSGIApplicationGroup %{GLOBAL}
-		Order deny,allow
-		Allow from all
-	</Directory>
+    WSGIDaemonProcess watch_finder_app threads=10
+    WSGIScriptAlias / /var/www/html/watch-finder/watch_finder_app.wsgi
+    <Directory /var/www/html/watch-finder>
+        WSGIProcessGroup watch_finder_app
+        WSGIApplicationGroup %{GLOBAL}
+        Order deny,allow
+        Allow from all
+    </Directory>
 
 Then, the service has to be restarted:
 
-	$ sudo service apache2 restart
+    $ sudo service apache2 restart
 
 With the apache and redis servers running, the `run_cv_server.py` has to be executed:
 
-	python run_cv_server
+    python run_cv_server
 
 ## TODOs
 
