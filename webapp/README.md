@@ -5,6 +5,7 @@
 The module is meant to be a tool for customers to find wrist watches in the site [Ethos Watch Boutiques](https://www.ethoswatches.com/). This objective is accomplished by using computer vision and machine learning technologies. The final product is a web module that allows users use the cameras of their devices or still images to detect watches in them. Then, the most similar ones in the database of the web store are presented to the customer.
 
 ## Implementation
+
 The web module has been implemented as a full stack solution using the following technologies:
 
 - Reactjs
@@ -12,14 +13,15 @@ The web module has been implemented as a full stack solution using the following
 - Redis
 
 ### Front end
+
 This part of the module is defined in the static folder with the following structure
 
     static
-        └── dist/
-        └── node_modules/
-        └── src/
-        └── .babelrc
-        └── package.json
+        |── dist/
+        |── node_modules/
+        |── src/
+        |── .babelrc
+        |── package.json
         └── webpack.config.js
 
 The folder `src` contains all the source files that will be bundled with webpack. The resulting files are located in the folder `dst`.
@@ -31,9 +33,9 @@ The configuration in `webpack.config.js` is quite standard. It is important to n
 The source files has the following self-descriptive structure:
 
     src
-      └── assets/
-      └── css/
-      └── js/
+      |── assets/
+      |── css/
+      |── js/
       └── index.html
 
 The folder `assets` contains images, but more importantly, it has the files that define the machine learning model. The file `model.json` has the architecture of the model, it defines the layers and other configurations. The files of the form `groupX-shardYofZ` contain the parameters of the model (weights). In total, all the files have a size around 40MB. This huge size is because the model is a general purpose one.
@@ -55,9 +57,9 @@ Finally, the file `index.html` is a template that defines a simple skeleton for 
 The back end is implemented with python scripts, it has the following structure:
 
     ml_server
-        └── run_cv_server.py
-        └── run_web_server.py
-        └── watch_finder_app.wsgi
+        |── run_cv_server.py
+        |── run_web_server.py
+        |── watch_finder_app.wsgi
         └── watch_finder_settings.py
 
 The following is a short description of each file:
@@ -72,20 +74,28 @@ The following is a short description of each file:
 The overall project has the following structure:
 
     watch-finder
-        └── common/
-        └── data/
-        └── ml/
+        |── common/
+        |── data/
+        |── ml/
         ├── webapp
-        |   └── ml_server/
+        |   |── ml_server/
         │   └── static/
         └── setup.py
 
 The folder `common` has python scripts with common functionalities to be used in other scripts. The folder `data` has the text files with the urls for the watches in the store. This folder has the images of the watches locally (they are not part of the remote repository). The folder `ml` contains scripts related to machine learning and computer vision; locally, it contains the pickle file that has the descriptors and urls of the watches of the store. Finally, `setup.py` is a script to configure the modules in `common` so they can be used in other part of the project.
 
-
 ## Setting the back end
 
-The process to set the back end are pretty straightforward. This process is mean to set the server, so it can properly deliver the expected results when it gets requests from the clients.
+The process to set the back end are pretty straightforward. This process is meant to set the server, so it can properly deliver the expected results when it gets requests from the clients. The following instructions are for a 64 bits system using Ubuntu 16.04
+
+### Preparation
+
+It is necessary to install the necessary libraries, use the following commands:
+
+    sudo apt update
+    sudo apt upgrade
+    sudo apt-get install build-essential cmake pkg-config
+    sudo apt-get install libsm6 libxrender1 # These are required for opencv
 
 ### Redis
 
@@ -96,6 +106,13 @@ This component is necessary to store in memory the images sent by the clients. I
     cd redis-stable
     make
     sudo make install
+
+If errors due to jemalloc, try the following commands:
+
+    cd deps
+    make hiredis lua jemalloc linenoise
+    cd ..
+    make
 
 The Redis server is started with the command `redis-server`. Validating Redis can be done with `redis-cli ping`, if the result is `PONG`, then everything is ok. The command `redis-cli flushall` is quite useful to remove previous elements from the memory.
 
@@ -108,21 +125,28 @@ The project was developed with python3. It is important to create a virtual envi
     pip install flask gevent
     pip install redis
 
+### Common module
+
+The common module has to be installed to allow access to computer vision utilities. In the root folder of the project, run the following command:
+
+    python setup.py develop
+
 ### Apache
+
 The web server can be set with the following commands:
 
     sudo apt-get install apache2
-    sudo apt-gte install libapache2-mod-wsgi-py3
+    sudo apt-get install libapache2-mod-wsgi-py3
     sudo a2enmod wsgi
 
 For ease, it is better to create a symlink to the back end folder in the directory where apache serves content: `/var/www/html`. This can be done with the following commands:
 
     cd /var/www/html/
-    sudo ln -s PATH_TO_ML_SERVER watch-finder
+    sudo ln -s PATH_TO_ML_SERVER_FOLDER watch-finder
 
 The, the apache server has to be configuresd to point to the flask app. This is done by editing the file `/etc/apache2/sites-available/000-default.conf`. In the top of the file, add the following lines:
 
-    WSGIPythonHome /home/ubuntu/.virtualenvs/OUR_ENVIRONMENT/in
+    WSGIPythonHome /home/ubuntu/.virtualenvs/OUR_ENVIRONMENT/bin
     WSGIPythonPath /home/ubuntu/.virtualenvs/OUR_ENVIRONMENT/lib/python3.5/site-packages
 
 Then, after `ServerAdmin` and `DocumentRoot`, add the following lines:
@@ -138,11 +162,11 @@ Then, after `ServerAdmin` and `DocumentRoot`, add the following lines:
 
 Then, the service has to be restarted:
 
-    $ sudo service apache2 restart
+    sudo service apache2 restart
 
 With the apache and redis servers running, the `run_cv_server.py` has to be executed:
 
-    python run_cv_server
+    python run_cv_server.py
 
 ## TODOs
 
@@ -151,7 +175,6 @@ Once the web module is ready, there are several things to do:
 - Change the YOLO model for an specific one. This requires to create and train a new model using tensorflow.
 - Improve the descriptor. Currently, it only uses the SIFT features to describe the watches.
 - Integrate the module into the website. This requires the coordination with the other developers.
-
 
 ## Acknowledgements
 
