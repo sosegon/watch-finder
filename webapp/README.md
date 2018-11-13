@@ -84,6 +84,29 @@ The overall project has the following structure:
 
 The folder `common` has python scripts with common functionalities to be used in other scripts. The folder `data` has the text files with the urls for the watches in the store. This folder has the images of the watches locally (they are not part of the remote repository). The folder `ml` contains scripts related to machine learning and computer vision; locally, it contains the pickle file that has the descriptors and urls of the watches of the store. Finally, `setup.py` is a script to configure the modules in `common` so they can be used in other part of the project.
 
+
+## Setting the front end
+
+It requires to install npm and nodejs packages.
+
+    sudo apt update
+    sudo apt upgrade
+    sudo apt install npm
+
+Nodejs has to be downloaded.
+
+    wget https://nodejs.org/dist/v10.13.0/node-v10.13.0-linux-x64.tar.xz
+    tar xf node-v10.13.0-linux-x64
+
+Then, it has to be added to the PATH, add the following line to `~/.bashrc`
+
+    export PATH=$PATH:/home/ubuntu/node-v10.13.0-linux-x64/bin
+
+Then, run `source ~/.bashrc`. Finally, go to the folder `static` anr run the following commands:
+
+    npm install
+    npm run build
+
 ## Setting the back end
 
 The process to set the back end are pretty straightforward. This process is meant to set the server, so it can properly deliver the expected results when it gets requests from the clients. The following instructions are for a 64 bits system using Ubuntu 16.04
