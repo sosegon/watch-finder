@@ -1,3 +1,5 @@
+import os
+
 # This is an updatable parameter
 REDIS_HOST = 'localhost'
 
@@ -13,4 +15,4 @@ SERVER_SLEEP = 0.25
 CLIENT_SLEEP = 0.25
 
 # This is an updatable parameter
-SIFT_DB = '/mnt/linux_shared/shared/lwork/watch-finder/ml/ethos_grays_square.pck'
+SIFT_DB = '{}/watches_db'.format(os.environ['WATCH_FINDER_HOME'])
