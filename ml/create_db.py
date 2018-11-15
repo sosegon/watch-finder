@@ -1,3 +1,8 @@
+#!../python
+#####################################################################
+# MAKE SURE THE SYMLINK IN THE ROOT FOLDE OF THE APPLICATION EXISTS #
+#####################################################################
+
 import argparse
 import glob
 import pickle

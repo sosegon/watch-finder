@@ -1,3 +1,8 @@
+#!../python
+#####################################################################
+# MAKE SURE THE SYMLINK IN THE ROOT FOLDE OF THE APPLICATION EXISTS #
+#####################################################################
+
 import cv2
 import numpy as np
 import os
