@@ -57,6 +57,7 @@ Finally, the file `index.html` is a template that defines a simple skeleton for 
 The back end is implemented with python scripts, it has the following structure:
 
     ml_server
+        |── cv_server.sh
         |── run_cv_server.py
         |── run_web_server.py
         |── watch_finder_app.wsgi
@@ -64,9 +65,10 @@ The back end is implemented with python scripts, it has the following structure:
 
 The following is a short description of each file:
 
+- `cv_server.sh` is a script to be used to set `run_cv_server.py` as a service.
 - `run_cv_server.py` contains the code that process the images to find the most similar watches in the db.
 - `run_web_server.py` hadles the requests and responses from and to the client.
-- `watch_finder_app.wsgi` a configuration file to set the application in an apache web server.
+- `watch_finder_app.wsgi` is a configuration file to set the application in an apache web server.
 - `watch_finder_settings.py` contains constants to be used in the other scripts.
 
 ### Extras
@@ -102,7 +104,7 @@ Then, it has to be added to the PATH, add the following line to `~/.bashrc`
 
     export PATH=$PATH:/home/ubuntu/node-v10.13.0-linux-x64/bin
 
-Then, run `source ~/.bashrc`. Finally, go to the folder `static` anr run the following commands:
+Then, run `source ~/.bashrc`. Finally, go to the folder `static` and run the following commands:
 
     npm install
     npm run build
@@ -119,6 +121,19 @@ It is necessary to install the necessary libraries, use the following commands:
     sudo apt upgrade
     sudo apt-get install build-essential cmake pkg-config
     sudo apt-get install libsm6 libxrender1 # These are required for opencv
+
+Then, the `WATCH_FINDER_HOME` environmental variable has to be created. This variable points to the root folder of the project. The easiest way is by adding the following line to the file `~/.bashrc`:
+
+    export WATCH_FINDER_HOME=path_to_root_folder_of_project
+
+Then, run the next command:
+
+    source ~/.bashrc
+
+The scripts use a couple of symlinks that has to be set in the root folder of the project. The first one is `watches_db` that points to the pickle database of watches. The second is `python` which points to the executable python interpreter, which is likely to be the one of the virtual environment. This symlinks are created by running the following commands in the root folder:
+
+    sudo ln -s path_to_watches_db watches_db
+    sudo ln -s path_to_python_interpreter python
 
 ### Redis
 
@@ -139,12 +154,14 @@ If errors due to jemalloc, try the following commands:
 
 The Redis server is started with the command `redis-server`. Validating Redis can be done with `redis-cli ping`, if the result is `PONG`, then everything is ok. The command `redis-cli flushall` is quite useful to remove previous elements from the memory.
 
+In the file `redis.conf`, look for the line `daemonize no` and change it to `daemonize yes` to have redis running as a daemon.
+
 ### Python libraries
 
 The project was developed with python3. It is important to create a virtual environment to work in. Then, the necessary libraries can be installed with the following commands
 
     pip install numpy
-    pip install opencv-contrib-python==3.4.2.16 #This is the version that has SIFT function enabled
+    pip install opencv-contrib-python==3.4.2.16 # This is the version that has SIFT function enabled
     pip install flask gevent
     pip install redis
 
@@ -187,9 +204,16 @@ Then, the service has to be restarted:
 
     sudo service apache2 restart
 
-With the apache and redis servers running, the `run_cv_server.py` has to be executed:
+### Computer vision service
 
-    python run_cv_server.py
+The script `run_cv_server.py` has to be set as a service to be active all the time. This require to do some modifications. First, the shebang of the script has to be set to the full path of the symlink set in [Preparation](#preparation).
+
+Then, the path to the environmental variable `WATCH_FINDER_HOME` has to be set in the script `watch_finder_settings`. Even though this variable was set in [Preparation](#preparation), for some unknown reason, it is not recognized in the python script when it is set as a service.
+
+Now, the file `cv_server.sh` has to be copied to the folder `/etc/init.d`. Then, run the following commands:
+
+    sudo update-rc.d cv_server.sh defaults
+    sudo service cv_server start
 
 ## TODOs
 
@@ -206,3 +230,5 @@ Once the web module is ready, there are several things to do:
 - [SIFT descriptor and search](https://medium.com/machine-learning-world/feature-extraction-and-similar-image-search-with-opencv-for-newbies-3c59796bf774)
 
 - [YOLO](https://github.com/ModelDepot/tfjs-yolo-tiny)
+
+- [Python script as service](http://blog.scphillips.com/posts/2013/07/getting-a-python-script-to-run-in-the-background-as-a-service-on-boot/) and [this one](https://thingsmatic.com/2016/06/18/daemonize-that-python-script/)
