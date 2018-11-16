@@ -1,7 +1,7 @@
-#!../../python
-#####################################################################
-# MAKE SURE THE SYMLINK IN THE ROOT FOLDE OF THE APPLICATION EXISTS #
-#####################################################################
+#!/mnt/linux_shared/shared/lwork/watch-finder/python
+############################################################################
+# This script run as a service, it works with the full path to the symlink #
+############################################################################
 
 import redis
 import time
@@ -30,6 +30,7 @@ def search_process(db_path):
 
 	# continues polling images to search
 	while True:
+		logger.info("Runnig cv server")
 		queue = db.lrange(IMAGE_QUEUE, 0, BATCH_SIZE - 1)
 		results = {}
 
@@ -93,3 +94,5 @@ if __name__ == '__main__':
 	sys.stderr = MyLogger(logger, logging.ERROR)
 
 	search_process(SIFT_DB)
+	# while True:
+	# 	logger.info("Testing this logger in cv")

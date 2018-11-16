@@ -14,5 +14,6 @@ BATCH_SIZE = 32
 SERVER_SLEEP = 0.25
 CLIENT_SLEEP = 0.25
 
-# This is an updatable parameter
+# The next parameter is configurable, it has to be updated in the production mode
+os.environ['WATCH_FINDER_HOME'] = '/mnt/linux_shared/shared/lwork/watch-finder'
 SIFT_DB = '{}/watches_db'.format(os.environ['WATCH_FINDER_HOME'])
