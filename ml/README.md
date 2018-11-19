@@ -2,12 +2,12 @@
 
 ## Introduction
 
-Current technology allows the creation of solutions that improve the user experience when shopping online. The site [Ethos Watch Boutiques](https://www.ethoswatches.com/) requires the creation of a web module that facilitates the shopping experience for their customers.
+Current technology allows the creation of solutions that improve the user experience when shopping online. The site [Ethos Watch Boutiques](https://www.ethoswatches.com/) requires the creation of a web module that facilitates the shopping experience for its customers.
 
-The solution involves using machine learning and computer vision technologies that make searching watches easier. The entire process is split into two main components: detection and recognition.
+The solution involves machine learning and computer vision technologies to make searching watches easier. The entire process is split into two main components: detection and recognition.
 
 ## Detection
-The objective of this component is to automatically find wrist watches in video sequences from camera devices and still images. The output is a set of boxes surrounding the watches in the images. Currently, this feature has been limited to detect a single watch, as seen in **Image 1**.
+The objective of this component is to automatically find wrist watches in video sequences from camera devices and still images. The output is a set of images of the detected the watches. Currently, this feature has been limited to detect a single watch, as seen in **Image 1**.
 
 <div style="text-align:center; font-weight: bold">
 	<img src="./documentation-images/detection.png" />
@@ -15,9 +15,9 @@ The objective of this component is to automatically find wrist watches in video 
 </div>
 
 ### Implementation
-Originally, this component was implemented using **haar cascades**. However, this technology was avoided due to the long time required to train the classifier to detect wrist watches. Depending on the number of samples and their size, the training time can take weeks. This problem is difficult to overcome since the process is done in CPU, and it allows a maximum of 4 cores.
+Originally, this component was implemented using **haar cascades**. However, this technology was avoided due to the long time required to train the classifier. Depending on the number of samples and their sizes, the training time can take weeks. This problem is difficult to overcome since the process is done in CPU, and it allows a maximum of 4 cores.
 
-The current solution utilises **YOLO** technology. The main advantage is the robustness and accuracy to detect different classes of objects (including wrist watches). However, since it is a general purpose model, its size is quite big `40 MB`. This means a considerable amount of time is required to download it as seen in **Image 2**.
+The current solution utilises **YOLO** technology. The main advantage is the robustness and accuracy to detect different classes of objects (including wrist watches). However, since it is a general purpose model, its size is quite big: `40 MB`. This means a considerable amount of time is required to download it as seen in **Image 2**.
 
 <div style="text-align:center; font-weight: bold">
 	<img src="./documentation-images/yolo_load_time.png" />
@@ -26,8 +26,8 @@ The current solution utilises **YOLO** technology. The main advantage is the rob
 
 
 ### Improvements to do
-- Create an efficient machine learning model to especifically detect watches.
-- Replace **YOLO** with the new model.
+- Creating an efficient machine learning model to especifically detect watches.
+- Replacing **YOLO** with the new model.
 
 ## Recognition
 Once a wrist watch has been detected, the recognition component is in charge of finding the most similar watches in the database of the site. The output of this process is a list of images of the most similar watches as seen in **Image 3**.
@@ -44,7 +44,7 @@ Key points are detected with the [SIFT](https://en.wikipedia.org/wiki/Scale-inva
 
 After the module detects a watch, it sends the image to the recognition component. There, the watch image is converted to a key points encoded version. This version is then compared against all the encoded watches in the file mentioned above. Then, those who are closer to the detected watch are selected, and their urls are sent back.
 
-The main drawback of the current solution is that the watches in the database include the belt. However, the detection module only captures the case of the wrist watch. This means that the detected keypoints for the same watch is different for the image in the database and the one sent by the detection module, as seen in **Image 4**.
+The main drawback of the current solution is that the watches in the database include the belt. However, the detection module only captures the case of the wrist watch. This means that the detected key points for the same watch are different for the image in the database and the one sent by the detection module, as seen in **Image 4**.
 
 <div style="text-align:center; font-weight: bold">
 	<img src="./documentation-images/key_points_difference.png" />
@@ -55,6 +55,6 @@ This difference in the keypoints affects the result of the recognition module. I
 
 #### Improvements to do
 
-- Improve the descriptor by adding color information to increase the accuracy when comparing watches.
+- Improving the descriptor by adding color information to increase the accuracy when comparing watches.
 
 It is also possible to crop the images in the database to remove the belt. This will also improve the model in the detection module.
