@@ -1,92 +1,60 @@
-# Making a detecting and searching wrist watch module
+# Detection and recognition of wrist watches
+
+## Introduction
+
+Current technology allows the creation of solutions that improve the user experience when shopping online. The site [Ethos Watch Boutiques](https://www.ethoswatches.com/) requires the creation of a web module that facilitates the shopping experience for their customers.
+
+The solution involves using machine learning and computer vision technologies that make searching watches easier. The entire process is split into two main components: detection and recognition.
 
 ## Detection
-This is the process to train the classifier to detect the watches from a camera device. The classifier is a binary one, which classifies an object either as WATCH or NOT WATCH.
+The objective of this component is to automatically find wrist watches in video sequences from camera devices and still images. The output is a set of boxes surrounding the watches in the images. Currently, this feature has been limited to detect a single watch, as seen in **Image 1**.
 
-The solution is a combination of the work found [here](https://pythonprogramming.net/haar-cascade-object-detection-python-opencv-tutorial/) and [here](https://github.com/mrnugget/opencv-haar-classifier-training)
+<div style="text-align:center; font-weight: bold">
+	<img src="./documentation-images/detection.png" />
+	<p>Image 1: Detection of wrist watches from images.</p>
+</div>
 
-### Gathering data
-Since the model classifies an object as WATCH or NOT WATCH, it is necessary to get images of both types. This type of data is collected from [ImageNet](http://www.image-net.org/). To do so, the `downloadImageByLink.py` script is used in the following way:
+### Implementation
+Originally, this component was implemented using **haar cascades**. However, this technology was avoided due to the long time required to train the classifier to detect wrist watches. Depending on the number of samples and their size, the training time can take weeks. This problem is difficult to overcome since the process is done in CPU, and it allows a maximum of 4 cores.
 
-`python downloadImageByLink.py pos http://www.image-net.org/api/text/imagenet.synset.geturls?wnid=n04607869`
+The current solution utilises **YOLO** technology. The main advantage is the robustness and accuracy to detect different classes of objects (including wrist watches). However, since it is a general purpose model, its size is quite big `40 MB`. This means a considerable amount of time is required to download it as seen in **Image 2**.
 
-`python downloadImageByLink.py neg http://image-net.org/api/text/imagenet.synset.geturls?wnid=n07942152
-`
+<div style="text-align:center; font-weight: bold">
+	<img src="./documentation-images/yolo_load_time.png" />
+	<p>Image 2: YOLO average download times.</p>
+</div>
 
-The result is a folder with positive images (wrist watches) and a folder with negative images (no wrist watches or background). The next step is to remove wrong images from those folders; these images are collected when the original ones do not longer exist. To do so, a folder named uglies is created, an example of the wrong images is put in that folder, and the following command is run `python ./tools/clean.py`
 
-### Preparing data
-Once the images have been collected and filtered, they have to be prepared. First, lists of both types of images are generated using the following commands:
-
-`find ./pos -iname "*.jpg" > positives.txt
-`
-
-`find ./neg -iname "*.jpg" > negatives.txt
-`
-
-Then, positive samples have to be created and stored in a folder named samples. In this process, the positive images (watches) are integrated into the negative ones (background). This integration is done randomly in terms of the position and rotation of the watches. This is done by running the following command:
-
-`perl bin/createsamples.pl positives.txt negatives.txt samples 25000 "opencv_createsamples -bgcolor 0 -bgthresh 0 -maxxangle 1.1 -maxyangle 1.1 maxzangle 0.5 -maxidev 40 -w 16 -h 16"`
-
-Finally, all those samples have to be merged into a single file using the following command:
-
-`python ./tools/mergevec.py -v samples/ -o samples.vec`
-
-### Training
-The final step is done with the following command:
-
-`opencv_traincascade -data classifier -vec samples.vec -bg negatives.txt   -numStages 20 -minHitRate 0.999 -maxFalseAlarmRate 0.5 -numPos 1000   -numNeg 600 -w 16 -h 16 -mode ALL -precalcValBufSize 1024   -precalcIdxBufSize 1024`
+### Improvements to do
+- Create an efficient machine learning model to especifically detect watches.
+- Replace **YOLO** with the new model.
 
 ## Recognition
+Once a wrist watch has been detected, the recognition component is in charge of finding the most similar watches in the database of the site. The output of this process is a list of images of the most similar watches as seen in **Image 3**.
 
-### Environment configuration
-We are going to use SIFT technologies, therefore, we need to configure the environment to do so. In this case, it is not possible to use anaconda. We are goint to use pip.
+<div style="text-align:center; font-weight: bold">
+	<img src="./documentation-images/recognition.png" />
+	<p>Image 3: List of watches based on the detected one.</p>
+</div>
 
-First, we need to install the following packages:
+### Implementation
+Recognition is done by comparing a given watch against all those in the database. This requires to define a descriptor that characterises the most relevant features of watches. Therefore, there are two important elements: **key points** and **descriptor**. Key points are parts of an image that stand out. In other words, they can be clearly recognized. A descriptor is an element that encodes the key points of an image, so they can be identified from one another.
 
-`pip install virtualenv virtualenvwrapper`
+Key points are detected with the [SIFT](https://en.wikipedia.org/wiki/Scale-invariant_feature_transform) feature detection algorimth. Then, the detected key points are encoded using the SIFT descriptor. The combination of the encoded key points is the descriptor of a given watch. This process is applied to every element in the database. The results are stored in a file that maps every watch descriptor to an url of its image.
 
-Then, we need to set some variable in the system. The following lines have to be added to the file .bashrc
+After the module detects a watch, it sends the image to the recognition component. There, the watch image is converted to a key points encoded version. This version is then compared against all the encoded watches in the file mentioned above. Then, those who are closer to the detected watch are selected, and their urls are sent back.
 
-`export WORKON_HOME=$HOME/.virtualenvs`
+The main drawback of the current solution is that the watches in the database include the belt. However, the detection module only captures the case of the wrist watch. This means that the detected keypoints for the same watch is different for the image in the database and the one sent by the detection module, as seen in **Image 4**.
 
-`export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3`
+<div style="text-align:center; font-weight: bold">
+	<img src="./documentation-images/key_points_difference.png" />
+	<p>Image 4: Difference of key points for the same watch.</p>
+</div>
 
-`source /usr/local/bin/virtualenvwrapper.sh`
+This difference in the keypoints affects the result of the recognition module. In some cases, a detected watch that is present in the database is not part of the results of the recognition module.
 
-In my case, I actually set the following lines since the configuration of my computer is customised.
+#### Improvements to do
 
-`export WORKON_HOME=$SHARED/.virtualenvs`
+- Improve the descriptor by adding color information to increase the accuracy when comparing watches.
 
-`export VIRTUALENVWRAPPER_PYTHON=/mnt/linux_shared/shared/anaconda3/bin/python3`
-
-`source /mnt/linux_shared/shared/anaconda3/bin/virtualenvwrapper.sh`
-
-Then, we source the file:
-
-`source .bashrc`
-
-Finally, we create a new environment and install the library (note the version of the library)
-
-`mkvirtualenv cv -p python3`
-
-`pip install opencv-contrib-python==3.4.2.16`
-
-The environment is started with the following command:
-
-`workon cv`
-
-## Appendix
-
-Build opencv from source to get access to the utilities. Use the following command:
-
-`cmake -D CMAKE_BUILD_TYPE=RELEASE \
-	-D CMAKE_INSTALL_PREFIX=/usr/local \
-	-D INSTALL_PYTHON_EXAMPLES=ON \
-	-D INSTALL_C_EXAMPLES=OFF \
-	-D OPENCV_EXTRA_MODULES_PATH=~/shared/software/opencv_contrib-3.4.3/modules \
-	-D PYTHON_EXECUTABLE=~/shared/.virtualenvs/cv_source/bin/python \
-	-D WITH_TBB=ON \
-	-D BUILD_PYTHON_SUPPORT=ON \
-	-D BUILD_EXAMPLES=ON ..`
-
+It is also possible to crop the images in the database to remove the belt. This will also improve the model in the detection module.
