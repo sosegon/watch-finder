@@ -76,16 +76,18 @@ The following is a short description of each file:
 The overall project has the following structure:
 
     watch-finder
-        |── common/
         |── data/
         |── ml/
-        ├── webapp
-        |   |── ml_server/
-        │   └── static/
-        └── setup.py
+        └── webapp
+            |── ml_server/
+            |── static/
+            └── extras/
+                  |── common/
+                  └── setup.py
 
-The folder `common` has python scripts with common functionalities to be used in other scripts. The folder `data` has the text files with the urls for the watches in the store. This folder has the images of the watches locally (they are not part of the remote repository). The folder `ml` contains scripts related to machine learning and computer vision; locally, it contains the pickle file that has the descriptors and urls of the watches of the store. Finally, `setup.py` is a script to configure the modules in `common` so they can be used in other part of the project.
+The folder `data` has the text files with the urls for the watches in the store. This folder has the images of the watches locally (they are not part of the remote repository). The folder `ml` contains scripts related to machine learning and computer vision; locally, it contains the pickle file that has the descriptors and urls of the watches of the store.
 
+The folder `common` has python scripts with common functionalities to be used in other scripts. Finally, `setup.py` is a script to configure the modules in `common` so they can be used in other parts of the project.
 
 ## Setting the front end
 
@@ -167,7 +169,7 @@ The project was developed with python3. It is important to create a virtual envi
 
 ### Common module
 
-The common module has to be installed to allow access to computer vision utilities. In the root folder of the project, run the following command:
+The common module has to be installed to allow access to computer vision utilities. In the folder `webapp/extras/` of the project, run the following command:
 
     python setup.py develop
 
