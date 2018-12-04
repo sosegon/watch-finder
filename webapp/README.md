@@ -79,6 +79,7 @@ The overall project has the following structure:
         |── data/
         |── ml/
         └── webapp
+            |── data/
             |── ml_server/
             |── static/
             └── extras/
@@ -86,6 +87,8 @@ The overall project has the following structure:
                   └── setup.py
 
 The folder `data` has the text files with the urls for the watches in the store. This folder has the images of the watches locally (they are not part of the remote repository). The folder `ml` contains scripts related to machine learning and computer vision; locally, it contains the pickle file that has the descriptors and urls of the watches of the store.
+
+The folder `data` under `webapp` has the symlink to the database of watches.
 
 The folder `common` has python scripts with common functionalities to be used in other scripts. Finally, `setup.py` is a script to configure the modules in `common` so they can be used in other parts of the project.
 
