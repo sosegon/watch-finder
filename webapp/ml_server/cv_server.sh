@@ -11,7 +11,7 @@
 # Description:       The service runs a Flask application that exposes a web api and an AngularJS app
 ### END INIT INFO
 
-DIR=$WATCH_FINDER_HOME/webapp/ml_server
+DIR=$WATCH_FINDER_HOME/ml_server
 DAEMON=$DIR/run_cv_server.py
 DAEMON_NAME=cv_server
 DAEMON_OPTS=""

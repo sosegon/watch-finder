@@ -15,5 +15,5 @@ SERVER_SLEEP = 0.25
 CLIENT_SLEEP = 0.25
 
 # The next parameter is configurable, it has to be updated in the production mode
-os.environ['WATCH_FINDER_HOME'] = '/mnt/linux_shared/shared/lwork/watch-finder'
-SIFT_DB = '{}/watches_db'.format(os.environ['WATCH_FINDER_HOME'])
+os.environ['WATCH_FINDER_HOME'] = '/mnt/linux_shared/shared/lwork/watch-finder/webapp'
+SIFT_DB = '{}/data/watches_db'.format(os.environ['WATCH_FINDER_HOME'])

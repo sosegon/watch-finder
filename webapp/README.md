@@ -124,17 +124,17 @@ It is necessary to install the necessary libraries, use the following commands:
     sudo apt-get install build-essential cmake pkg-config
     sudo apt-get install libsm6 libxrender1 # These are required for opencv
 
-Then, the `WATCH_FINDER_HOME` environmental variable has to be created. This variable points to the root folder of the project. The easiest way is by adding the following line to the file `~/.bashrc`:
+Then, the `WATCH_FINDER_HOME` environmental variable has to be created. This variable points to the folder `watch-finder/webapp` of the project. The easiest way is by adding the following line to the file `~/.bashrc`:
 
-    export WATCH_FINDER_HOME=path_to_root_folder_of_project
+    export WATCH_FINDER_HOME=full_path_to_webapp
 
 Then, run the next command:
 
     source ~/.bashrc
 
-The scripts use a couple of symlinks that has to be set in the root folder of the project. The first one is `watches_db` that points to the pickle database of watches. The second is `python` which points to the executable python interpreter, which is likely to be the one of the virtual environment. This symlinks are created by running the following commands in the root folder:
+The scripts use a couple of symlinks that has to be set up. The first one is `watches_db` that points to the pickle database of watches. The second is `python` which points to the executable python interpreter, which is likely to be the one of the virtual environment. This symlinks are created by running the following commands in the folder `watch-finder/webapp`:
 
-    sudo ln -s path_to_watches_db watches_db
+    sudo ln -s path_to_watches_db data/watches_db
     sudo ln -s path_to_python_interpreter python
 
 ### Redis

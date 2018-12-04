@@ -1,4 +1,4 @@
-#!/mnt/linux_shared/shared/lwork/watch-finder/python
+#!/mnt/linux_shared/shared/lwork/watch-finder/webapp/python
 ############################################################################
 # This script run as a service, it works with the full path to the symlink #
 ############################################################################
